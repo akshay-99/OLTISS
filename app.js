@@ -5,7 +5,7 @@ async function updateData()
     document.getElementById("loader").style.display='block';
     
     
-    req = await fetch('/combine', {headers: {
+    /*req = await fetch('/combine', {headers: {
         'Access-Control-Allow-Origin':'*',
         'withCredentials': false
         }});
@@ -29,11 +29,53 @@ async function updateData()
     document.getElementById("loader").style.display='none';
     document.getElementById("locdiv").style.display="block";
     document.getElementById("updt").style.display="block";
-    document.getElementById("updt").innerHTML = "<i>As of "+getFormattedDate()+"</i>";
+    document.getElementById("updt").innerHTML = "<i>As of "+getFormattedDate()+"</i>";*/
+
+    
+    var tag = document.createElement("script");
+    tag.src = 'http://api.open-notify.org/iss-now.json?callback=isscall';
+    document.getElementsByTagName("head")[0].appendChild(tag);
 
         
     
 }
+
+isscall = function(resp)
+{
+    console.log(resp)
+    lat = resp.iss_position.latitude;
+    lng = resp.iss_position.longitude;
+    console.log(lat, lng);
+
+    var tag = document.createElement("script");
+    tag.src = 'http://api.geonames.org/extendedFindNearbyJSON?lat='+lat+'&lng='+lng+'&username=akshay745632199&callback=geocall';
+    document.getElementsByTagName("head")[0].appendChild(tag);
+    document.getElementById("coords").innerHTML = lat+", "+lng;
+
+}
+
+geocall = function(resp){
+        console.log(resp);
+        text = ''
+        if(resp.ocean)
+        {
+            text = resp.ocean.name;
+        }
+        else{
+            text = resp.geocodes[resp.geocodes.length-1].name+', '+resp.geocodes[resp.geocodes.length-1].country;
+        }
+        document.getElementById("loc").innerHTML = text;
+        
+        
+
+        document.getElementById("loader").style.display='none';
+        document.getElementById("locdiv").style.display="block";
+        document.getElementById("updt").style.display="block";
+        document.getElementById("updt").innerHTML = "<i>As of "+getFormattedDate()+"</i>";
+    
+
+}
+
 
 function getLocation() {
     if(navigator.geolocation) {
