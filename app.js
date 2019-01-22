@@ -32,49 +32,35 @@ async function updateData()
     document.getElementById("updt").innerHTML = "<i>As of "+getFormattedDate()+"</i>";*/
 
     
-    var tag = document.createElement("script");
-    tag.src = 'http://api.open-notify.org/iss-now.json?callback=isscall';
-    document.getElementsByTagName("head")[0].appendChild(tag);
+    /*var tag = document.createElement("script");
+    // tag.src = 'http://api.open-notify.org/iss-now.json?callback=isscall';
+    document.getElementsByTagName("head")[0].appendChild(tag);*/
 
-        
+    req = await fetch('https://api.wheretheiss.at/v1/satellites/25544');
+    data = await req.json();
     
-}
+    lat = data.latitude;
+    lng = data.longitude;
+        
+    req = await fetch('https://api.opencagedata.com/geocode/v1/json?key=5bc2c47154ee40e8bc401d3fa9bf77df&q='+lat+'%2C'+lng+'&pretty=1&no_annotations=1')
+    data = await req.json()
+    if(data.results[0].country)
+        text = data.results[0].city+', '+data.results[0].country;
+    else
+        text = data.results[0].formatted;
 
-isscall = function(resp)
-{
-    console.log(resp)
-    lat = resp.iss_position.latitude;
-    lng = resp.iss_position.longitude;
-    console.log(lat, lng);
-
-    var tag = document.createElement("script");
-    tag.src = 'http://api.geonames.org/extendedFindNearbyJSON?lat='+lat+'&lng='+lng+'&username=akshay745632199&callback=geocall';
-    document.getElementsByTagName("head")[0].appendChild(tag);
+    document.getElementById("loc").innerHTML = text;
+        
+        
     document.getElementById("coords").innerHTML = lat+", "+lng;
-
+    document.getElementById("loader").style.display='none';
+    document.getElementById("locdiv").style.display="block";
+    document.getElementById("updt").style.display="block";
+    document.getElementById("updt").innerHTML = "<i>As of "+getFormattedDate()+"</i>";
 }
 
-geocall = function(resp){
-        console.log(resp);
-        text = ''
-        if(resp.ocean)
-        {
-            text = resp.ocean.name;
-        }
-        else{
-            text = resp.geocodes[resp.geocodes.length-1].name+', '+resp.geocodes[resp.geocodes.length-1].country;
-        }
-        document.getElementById("loc").innerHTML = text;
-        
-        
 
-        document.getElementById("loader").style.display='none';
-        document.getElementById("locdiv").style.display="block";
-        document.getElementById("updt").style.display="block";
-        document.getElementById("updt").innerHTML = "<i>As of "+getFormattedDate()+"</i>";
-    
 
-}
 
 
 function getLocation() {
