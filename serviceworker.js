@@ -3,13 +3,14 @@ const staticAssets = [
     './styles.css',
     './app.js',
     './images/Earth.svg',
-    './images/satellite.svg'
+    './images/satellite.svg',
+    './images/30-512.png'
 ];
 
 var mode;
 
 self.addEventListener('install', async event => {
-    const cache = await caches.open('static-quote');
+    const cache = await caches.open('static-location');
     cache.addAll(staticAssets);
 });
 
@@ -21,6 +22,8 @@ self.addEventListener('fetch', event => {
     if(mode===false)
         event.respondWith(cacheData(request));
     else{
+        caches.delete('static-location');
+        caches.delete('static-quote');
         console.log(url);
 
         if(url.origin === location.origin) {
@@ -55,7 +58,7 @@ async function cacheData(request)
 
 async function networkFirst(request) 
 {
-    const cache = await caches.open('dynamic-qoute');
+    const cache = await caches.open('dynamic-location');
 
     try {
         const response = await fetch(request);

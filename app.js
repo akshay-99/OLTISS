@@ -1,41 +1,11 @@
+errorloading = false;
 async function updateData()
 {
     document.getElementById("locdiv").style.display='none';
     document.getElementById("updt").style.display="none";
     document.getElementById("loader").style.display='block';
-    
-    
-    /*req = await fetch('/combine', {headers: {
-        'Access-Control-Allow-Origin':'*',
-        'withCredentials': false
-        }});
-    data = await req.json();
-    console.log(data);
-    var lat = data.lat;
-    var lng = data.lng;
-    var typep = data.type;
-    if (typep === 'ocean')
-    {
-        document.getElementById("loc").innerHTML = data.name;
-        
-    }
-    else{
-        document.getElementById("loc").innerHTML = data.name+", "+data.country;
-        
-    }
-    document.getElementById("coords").innerHTML = data.lat+", "+data.lng;
-    
 
-    document.getElementById("loader").style.display='none';
-    document.getElementById("locdiv").style.display="block";
-    document.getElementById("updt").style.display="block";
-    document.getElementById("updt").innerHTML = "<i>As of "+getFormattedDate()+"</i>";*/
-
-    
-    /*var tag = document.createElement("script");
-    // tag.src = 'http://api.open-notify.org/iss-now.json?callback=isscall';
-    document.getElementsByTagName("head")[0].appendChild(tag);*/
-
+    try{
     req = await fetch('https://api.wheretheiss.at/v1/satellites/25544');
     data = await req.json();
     
@@ -57,7 +27,20 @@ async function updateData()
     document.getElementById("locdiv").style.display="block";
     document.getElementById("updt").style.display="block";
     document.getElementById("updt").innerHTML = "<i>As of "+getFormattedDate()+"</i>";
+    errorloading=false;
+    }catch(err){
+        console.log(err);
+        errorloading=true;
+    }
 }
+
+setInterval(function()
+{
+    if(errorloading)
+    {
+        updateData();
+    }
+}, 500)
 
 
 
@@ -115,6 +98,7 @@ window.addEventListener('load', async e => {
 var hamburger_on = false;
 var hamburger = function()
 {
+    document.getElementById('sidenav').style.display = 'block';
     document.getElementById('sidenav').animate(
         [
             // keyframes
@@ -135,6 +119,7 @@ var hamburger = function()
 var hamburger_out = function()
 {
     if(hamburger_on){
+        
     document.getElementById('sidenav').animate(
         [
             // keyframes
@@ -147,8 +132,10 @@ var hamburger_out = function()
           }
         ).onfinish = function(){
         document.getElementById('sidenav').style.transform = 'translateX(-100%)';
+        document.getElementById('sidenav').style.display = 'none';
         }
         hamburger_on=false;
+        
     }
 
 }
@@ -172,8 +159,8 @@ var doload = function()
 {
     document.getElementById('hamburger').onclick = hamburger;
     document.getElementById('rightside').onclick = hamburger_out;
-    document.getElementById('location-sn').onclick = getloc;
-    document.getElementById('next-sn').onclick = nextpass;
+    
+    
     var rect = document.getElementById('earth').getBoundingClientRect();
     console.log(rect);
     centerX = (rect.right + rect.left )/2;
